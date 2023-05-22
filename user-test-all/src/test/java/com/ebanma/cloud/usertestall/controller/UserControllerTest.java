@@ -1,73 +1,98 @@
 package com.ebanma.cloud.usertestall.controller;
 
+import com.ebanma.cloud.usertestall.domain.common.PageQuery;
+import com.ebanma.cloud.usertestall.domain.common.PageResult;
+import com.ebanma.cloud.usertestall.domain.common.Result;
+import com.ebanma.cloud.usertestall.domain.dto.UserDTO;
+import com.ebanma.cloud.usertestall.domain.dto.UserQueryDTO;
 import com.ebanma.cloud.usertestall.service.UserService;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.ArrayList;
+import java.util.List;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(UserController.class)
+@RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @Test
-    public void testSave() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = post("/api/user")
-                .contentType("application/json;charset=UTF-8")
-                .content("{\n"
-                        +"      \"username\":\"username\",\n"
-                        +"      \"password\":\"password\",\n"
-                        +"      \"email\":\"123661231@qq.com\",\n"
-                        +"      \"age\":25,\n"
-                        +"      \"phone\":\"13977078880\",\n"
-                        +"      \"version\":1\n"
-                        + "}");
-        this.mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk());
+    @InjectMocks
+    private UserController userController;
+
+    private UserDTO userDTO;
+
+    private List<UserDTO> list;
+
+    @Before
+    public void setUp() throws Exception {
+        // 数据初始化
+        userDTO = new UserDTO();
+        userDTO.setUsername("username");
+        userDTO.setPassword("password");
+        userDTO.setEmail("123661231@qq.com");
+        userDTO.setAge(25);
+        userDTO.setPhone("13977078880");
+        userDTO.setVersion(1L);
+        list = new ArrayList<>();
+        list.add(userDTO);
     }
 
-    @Test
-    public void testUpdate() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = put("/api/user/123")
-                .contentType("application/json;charset=UTF-8")
-                .content("{\n"
-                        +"      \"username\":\"username\",\n"
-                        +"      \"password\":\"password\",\n"
-                        +"      \"email\":\"123661231@qq.com\",\n"
-                        +"      \"age\":25,\n"
-                        +"      \"phone\":\"13977078880\",\n"
-                        +"      \"version\":1\n"
-                        + "}");
-        this.mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk());
-
-    }
 
     @Test
-    public void testDelete() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = delete("/api/user/121321");
-        this.mockMvc.perform(requestBuilder).andExpect(status().isOk());
+    public void update() {
+        Mockito.doReturn(1).when(userService).update(Mockito.any(Long.class),Mockito.any(UserDTO.class));
+        Result success = userController.update(123456L,userDTO);
+        Assertions.assertTrue(success.getSuccess());
+
+        Mockito.doReturn(0).when(userService).update(Mockito.any(Long.class),Mockito.any(UserDTO.class));
+        Result fail = userController.update(123456L,userDTO);
+        Assertions.assertFalse(fail.getSuccess());
 
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void save() {
+        Mockito.doReturn(1).when(userService).save(Mockito.any(UserDTO.class));
+        Result success = userController.save(userDTO);
+        Assertions.assertTrue(success.getSuccess());
+        Mockito.doReturn(0).when(userService).save(Mockito.any(UserDTO.class));
+        Result fail = userController.save(userDTO);
+        Assertions.assertFalse(fail.getSuccess());
+    }
 
-        MockHttpServletRequestBuilder requestBuilder = get("/api/user");
-        this.mockMvc.perform(requestBuilder).andExpect(status().isOk());
+    @Test
+    public void delete() {
+        Mockito.doReturn(1).when(userService).delete(Mockito.any(Long.class));
+        Result success = userController.delete(123L);
+        Assertions.assertTrue(success.getSuccess());
+        Mockito.doReturn(0).when(userService).delete(Mockito.any(Long.class));
+        Result fail = userController.delete(123L);
+        Assertions.assertFalse(fail.getSuccess());
+
+    }
+
+    @Test
+    public void query() {
+        PageResult<List<UserDTO>> pageResult = new PageResult<>();
+        pageResult.setData(list);
+        UserQueryDTO userQueryDTO = new UserQueryDTO();
+        userQueryDTO.setUsername(userDTO.getUsername());
+        Mockito.doReturn(pageResult).when(userService).query(Mockito.any(PageQuery.class));
+        Result success = userController.query(1,1,userQueryDTO);
+        Assertions.assertTrue(success.getSuccess());
+
+        Mockito.doReturn(null).when(userService).query(Mockito.any(PageQuery.class));
+        Result fail = userController.query(1,1,userQueryDTO);
+        Assertions.assertFalse(fail.getSuccess());
 
     }
 }

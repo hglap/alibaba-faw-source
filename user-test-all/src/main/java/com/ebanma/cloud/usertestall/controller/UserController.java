@@ -108,7 +108,9 @@ public class UserController {
             LOGGER.info("未使用缓存！！");
         }
         PageResult<List<UserDTO>> pageResult = userService.query(pageQuery);
-
+        if(pageResult == null){
+            return Result.fail(ErrorCode.SYSTEM_ERROR);
+        }
         // 实体转换
         List<UserVO> userVOList = Optional
                 .ofNullable(pageResult.getData())

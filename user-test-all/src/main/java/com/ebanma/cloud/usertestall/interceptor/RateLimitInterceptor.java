@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     /**
-     * 速度限制器（QPS限制为 1,即 1秒内的请求数为 1）
+     * 速度限制器（QPS限制为 1,即 1秒内的请求数为 10）
      */
-    private static final RateLimiter rateLimiter = RateLimiter.create(1);
+    private static final RateLimiter rateLimiter = RateLimiter.create(10);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitInterceptor.class);
 
