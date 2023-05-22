@@ -21,4 +21,5 @@ public class StarterTest {
     public void myStarterTest(){
         System.out.println(simpleBean);
     }
+
 }

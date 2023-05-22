@@ -37,6 +37,23 @@ public class UserController {
     private UserService userService;
 
     /**
+     * PUT /api/user/{id}
+     * 更新用户信息
+     */
+    @PutMapping("/{id}")
+    public Result update(@NotNull @PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
+
+        int update = userService.update(id, userDTO);
+
+        if (update == 1) {
+            return Result.success();
+        } else {
+            return Result.fail(ErrorCode.SYSTEM_ERROR);
+        }
+
+    }
+
+    /**
      * POST /api/user
      * 新增用户
      */
@@ -48,23 +65,6 @@ public class UserController {
         int save = userService.save(userDTO);
 
         if (save == 1) {
-            return Result.success();
-        } else {
-            return Result.fail(ErrorCode.SYSTEM_ERROR);
-        }
-
-    }
-
-    /**
-     * PUT /api/user/{id}
-     * 更新用户信息
-     */
-    @PutMapping("/{id}")
-    public Result update(@NotNull @PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
-
-        int update = userService.update(id, userDTO);
-
-        if (update == 1) {
             return Result.success();
         } else {
             return Result.fail(ErrorCode.SYSTEM_ERROR);
